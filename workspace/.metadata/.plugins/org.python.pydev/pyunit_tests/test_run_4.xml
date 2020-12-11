@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pydev-testrun version="1.0"?><pydev-testsuite>
+<summary errors="1" failures="0" finished="true" name="Test Run: 4" tests="0" total_time="Finished in: 0.00 secs."/>
+<test location="C:/Users/wswij/Python/workspace/pepperBasic/src/pepperSimple.py" status="error" test="src.pepperSimple" time="0">
+<stdout/>
+<stderr><![CDATA[Traceback (most recent call last):
+  File "C:\Users\wswij\.p2\pool\plugins\org.python.pydev.core_7.5.0.202001101138\pysrc\_pydev_runfiles\pydev_runfiles.py", line 468, in __get_module_from_str
+    mod = __import__(modname)
+  File "C:\Users\wswij\Python\workspace\pepperBasic\src\pepperSimple.py", line 10, in <module>
+    import commentjson
+ImportError: No module named commentjson
+ERROR: Module: src.pepperSimple could not be imported (file: C:/Users/wswij/Python/workspace/pepperBasic/src/pepperSimple.py).
+]]></stderr>
+</test>
+<launch mode="run">
+<launch_memento><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration local="true" path="pepperBasic pepperBasic"/>
+]]></launch_memento>
+</launch>
+</pydev-testsuite>

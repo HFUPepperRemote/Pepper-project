@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;pepperBasic/src/pepperSimple2.py&apos;" deleteContents="false" description="Delete resource &apos;pepperBasic/src/pepperSimple2.py&apos;" element1="/pepperBasic/src/pepperSimple2.py" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1582897150044"/>
+</session>

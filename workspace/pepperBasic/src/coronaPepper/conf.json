@@ -1,0 +1,49 @@
+# conf.json
+#
+# für Home-AZ: roter Karton, Grüner Becher
+#
+# json-Datei mit Konfig-Parametern für Upper/Lower-Farbwerte von
+# Objekt 1 und Objekt 2, Minimal-Größen, Kamera-Parameter....
+# Object 1 kann entweder Ball oder Rechteck (d.h. Tablett-Fläche) sein
+# TEST: weißer Becher auf Rotem Karton
+{
+	# Grünes Objekt (großer Ball) 
+        #"isRectangle": false,		# false, iff Ball
+        #"color1": "0,135,0",
+        #"lower1": "43,44,86",
+        #"upper1": "98,203,255", 
+	#"size1_thresh": 35,
+
+        # Roter Karton (großes Rechteck)
+        "isRectangle": true,            # true, iff Rect
+        "color1": "230, 230, 230",
+        # dark: Schreibtischlampe, Hintergrund NICHT schwarz!
+        "lower1": "0,  178, 184",
+        "upper1": " 45, 255, 255",
+        # office
+        #"lower1": "0, 208, 151",
+        #"upper1": "6, 255, 233",
+        "size1_thresh": 100, 	# =(width+height) of enclosing rect!
+
+	# Grüner Becher / TippEx (klein)
+        "color2": "300,255,30",
+        "lower2": "26, 49, 0",
+        "upper2": "93,255,255",
+	"size2_thresh": 9,
+
+	# Kamera-Sachen
+	"camera_warmup_time": 1,
+	"videoframe_width": 640,
+
+        # Sonstiges
+        # Test-Modus: 0=camera only, 1=pepper only, 2=complete
+        "Mode": 0,
+        "PepperIP": "192.168.0.41",  # pepper02, SHL-WLAN
+        # "PepperIP": "192.168.0.39",
+        "PepperPORT": 9559,
+        "doInit": false,
+        "doSleep": false,
+
+        ### immer vergesse ich das Komma...
+        "null": 0
+}

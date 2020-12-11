@@ -1,0 +1,1267 @@
+<?xml version="1.0" encoding="UTF-8" ?><ChoregrapheProject xmlns="http://www.aldebaran-robotics.com/schema/choregraphe/project.xsd" xar_version="3"><Box name="root" id="-1" localization="8" tooltip="Root box of Choregraphe&apos;s behavior. Highest level possible." x="0" y="0"><bitmap>media/images/box/root.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="SBR/Test/Tablet/SlowTouch" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/SlowTouch" inner="1" tooltip="SBR/Test/Tablet/SlowTouch desc" id="4" /><Input name="MiddleTactilTouched" type="0" type_size="1" nature="4" stm_value_name="MiddleTactilTouched" inner="1" tooltip="MiddleTactilTouched desc" id="5" /><Input name="SBR/Test/Tablet/TextEvent" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/TextEvent" inner="1" tooltip="SBR/Test/Tablet/TextEvent desc" id="6" /><Input name="SBR/Test/Tablet/video" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/video" inner="1" tooltip="SBR/Test/Tablet/video desc" id="7" /><Input name="SBR/Test/Tablet/video2" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/video2" inner="1" tooltip="SBR/Test/Tablet/video2 desc" id="8" /><Input name="LeftBumperPressed" type="0" type_size="1" nature="4" stm_value_name="LeftBumperPressed" inner="1" tooltip="LeftBumperPressed desc" id="9" /><Input name="SBR/Test/Tablet/video3" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/video3" inner="1" tooltip="SBR/Test/Tablet/video3 desc" id="10" /><Input name="SBR/Test/Tablet/bild" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild" inner="1" tooltip="SBR/Test/Tablet/bild desc" id="11" /><Input name="SBR/Test/Tablet/bild1" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild1" inner="1" tooltip="SBR/Test/Tablet/bild1 desc" id="12" /><Input name="SBR/Test/Tablet/bild2" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild2" inner="1" tooltip="SBR/Test/Tablet/bild2 desc" id="13" /><Input name="SBR/Test/Tablet/bild3" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild3" inner="1" tooltip="SBR/Test/Tablet/bild3 desc" id="14" /><Input name="SBR/Test/Tablet/bild4" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild4" inner="1" tooltip="SBR/Test/Tablet/bild4 desc" id="15" /><Input name="SBR/Test/Tablet/bild5" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild5" inner="1" tooltip="SBR/Test/Tablet/bild5 desc" id="16" /><Input name="SBR/Test/Tablet/bild6" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild6" inner="1" tooltip="SBR/Test/Tablet/bild6 desc" id="17" /><Input name="SBR/Test/Tablet/bild7" type="0" type_size="1" nature="4" stm_value_name="SBR/Test/Tablet/bild7" inner="1" tooltip="SBR/Test/Tablet/bild7 desc" id="18" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="19" /><Timeline enable="0"><BehaviorLayer name="behavior_layer1"><BehaviorKeyframe name="keyframe1" index="1"><Diagram scale="100"><Box name="Show App" id="2" localization="8" tooltip="Loads the application on the tablet, if it exists, and displays the webview.&#x0A;&#x0A;V1.0.0&#x0A;" x="491" y="115"><bitmap>media/images/box/root.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        self.isRunning = False
+        self.frameManager = None
+        try:
+            self.frameManager = ALProxy("ALFrameManager")
+        except Exception as e:
+            self.logger.error(e)
+
+    def onUnload(self):
+        self.isRunning = False
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def onInput_onStart(self):
+        if self.isRunning:
+            return # already running, nothing to do
+        self.isRunning = True
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        appName = self.packageUid()
+        state = False
+        if appName:
+            if tabletService:
+                if tabletService.loadApplication(appName):
+                    self.logger.info("Successfully set application: %s" % appName)
+                    tabletService.showWebview()
+                    state = True
+                else:
+                    self.logger.warning("Got tablet service, but failed to set application: %s" % appName)
+            else:
+                self.logger.warning("Couldn't find tablet service, so can't set application: %s" % appName)
+        if state:
+            self.onSuccess()
+        else:
+            self.onFailure()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onSuccess" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished successfully." id="3" /><Output name="onFailure" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished unsuccessfully." id="4" /></Box><Box name="Hide Web View" id="3" localization="8" tooltip="Hides the webview (html content) on the tablet, behind a generic cover&#x0A;&#x0A;V1.0.0&#x0A;" x="682" y="17"><bitmap>media/images/box/internet/internet.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            tabletService.hideWebview()
+        else:
+            self.logger.warning("ALTabletService not found.")
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /></Box><Box name="Animated Say Text" id="8" localization="8" tooltip="Say the text received on its input and move during its speech.&#x0A;" x="227" y="288"><bitmap>media/images/box/interaction/say.png</bitmap><script language="4"><content><![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.tts = ALProxy('ALAnimatedSpeech')
+        self.ttsStop = ALProxy('ALAnimatedSpeech', True) #Create another proxy as wait is blocking if audioout is remote
+
+    def onLoad(self):
+        self.bIsRunning = False
+        self.ids = []
+
+    def onUnload(self):
+        for id in self.ids:
+            try:
+                self.ttsStop.stop(id)
+            except:
+                pass
+        while( self.bIsRunning ):
+            time.sleep( 0.2 )
+
+    def onInput_onStart(self, p):
+        self.bIsRunning = True
+        try:
+            movement = self.getParameter("Speaking movement mode")
+            sentence = "\RSPD="+ str( self.getParameter("Speed (%)") ) + "\ "
+            sentence += "\VCT="+ str( self.getParameter("Voice shaping (%)") ) + "\ "
+            sentence += str(p)
+            sentence +=  "\RST\ "
+            id = self.tts.post.say(str(sentence), {"speakingMovementMode":movement})
+            self.ids.append(id)
+            self.tts.wait(id, 0)
+        finally:
+            try:
+                self.ids.remove(id)
+            except:
+                pass
+            if( self.ids == [] ):
+                self.onStopped() # activate output of the box
+                self.bIsRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" /><Input name="onStart" type="3" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this Input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this Input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when Box behavior is finished." id="4" /><Parameter name="Voice shaping (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="150" tooltip='Used to modify at runtime the voice feature (tone, speed). In a slighty&#x0A;different way than pitch and speed, it gives a kind of &quot;gender or age&#x0A;modification&quot; effect.&#x0A;&#x0A;For instance, a quite good male derivation of female voice can be&#x0A;obtained setting this parameter to 78%.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the&#x0A;speed parameter. For example, if you want to decrease by 20% the voice&#x0A;shaping, you will have to increase by 20% the speed to keep a constant&#x0A;average speed.' id="5" /><Parameter name="Speed (%)" inherits_from_parent="1" content_type="1" value="100" default_value="100" min="50" max="200" tooltip="Changes the speed of the voice.&#x0A;&#x0A;Note: For a better effect, you can compensate this parameter with the voice&#x0A;shaping parameter. For example, if you want to increase by 20% the speed, you&#x0A;will have to decrease by 20% the voice shaping to keep a constant average&#x0A;speed." id="6" /><Parameter name="Speaking movement mode" inherits_from_parent="0" content_type="3" value="contextual" default_value="contextual" custom_choice="0" tooltip="Change the body language mode during the speech.&#x0A;disabled: The robot will only play the animations given by the user through the animation parameter.&#x0A;random: During time the robot has no animation to play, he will launch random neutral animations.&#x0A;contextual: During time the robot has no animation to play, he will try to launch a new one accordingly to the saying text. Every time the robot can&apos;t find a contextual animation he will launch a random neutral animation." id="7"><Choice value="disabled" /><Choice value="random" /><Choice value="contextual" /></Parameter></Box><Box name="GoToStance_Affirmation_Center" id="6" localization="8" tooltip="ID : #01C 9991&#x0A;&#x0A;===================&#x0A;&#x0A;Tags : &#x0A;- Transition&#x0A;&#x0A;===================&#x0A;&#x0A;Common dialog : Yes&#x0A;&#x0A;===================&#x0A;&#x0A;Start stance : Center&#x0A;End stance : Center" x="366" y="281"><bitmap>media/images/box/movement/move.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Timeline enable="1" fps="25" start_frame="1" end_frame="-1" size="31"><ActuatorList model=""><ActuatorCurve name="value" actuator="HeadPitch" mute="0" unit="0"><Key frame="15" value="-7.78743" /><Key frame="30" value="-16.4032" /></ActuatorCurve><ActuatorCurve name="value" actuator="HeadYaw" mute="0" unit="0"><Key frame="30" value="-2.90283" /></ActuatorCurve><ActuatorCurve name="value" actuator="HipPitch" mute="0" unit="0"><Key frame="15" value="-14.4652" /><Key frame="30" value="-2.71089" /></ActuatorCurve><ActuatorCurve name="value" actuator="HipRoll" mute="0" unit="0"><Key frame="30" value="-0.0120679" /></ActuatorCurve><ActuatorCurve name="value" actuator="KneePitch" mute="0" unit="0"><Key frame="15" value="7.00987" /><Key frame="30" value="-0.617537" /></ActuatorCurve><ActuatorCurve name="value" actuator="LElbowRoll" mute="0" unit="0"><Key frame="16" value="-66.3" /><Key frame="29" value="-65.9" /><Key frame="31" value="-70.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="LElbowYaw" mute="0" unit="0"><Key frame="16" value="-77.1" /><Key frame="31" value="-83.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="LHand" mute="0" unit="1"><Key frame="16" value="0.49" /><Key frame="29" value="0.35" /></ActuatorCurve><ActuatorCurve name="value" actuator="LShoulderPitch" mute="0" unit="0"><Key frame="14" value="62.8" /><Key frame="31" value="93.7" /></ActuatorCurve><ActuatorCurve name="value" actuator="LShoulderRoll" mute="0" unit="0"><Key frame="14" value="19.1377" /><Key frame="31" value="8.33774" /></ActuatorCurve><ActuatorCurve name="value" actuator="LWristYaw" mute="0" unit="0"><Key frame="16" value="-42" /><Key frame="31" value="-12.7" /></ActuatorCurve><ActuatorCurve name="value" actuator="RElbowRoll" mute="0" unit="0"><Key frame="14" value="56.7" /><Key frame="29" value="70.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="RElbowYaw" mute="0" unit="0"><Key frame="14" value="63.7" /><Key frame="29" value="83.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="RHand" mute="0" unit="1"><Key frame="14" value="0.09" /><Key frame="29" value="0.53" /></ActuatorCurve><ActuatorCurve name="value" actuator="RShoulderPitch" mute="0" unit="0"><Key frame="16" value="64.5" /><Key frame="29" value="93.7" /></ActuatorCurve><ActuatorCurve name="value" actuator="RShoulderRoll" mute="0" unit="0"><Key frame="16" value="-11.9981" /><Key frame="29" value="-6.99811" /></ActuatorCurve><ActuatorCurve name="value" actuator="RWristYaw" mute="0" unit="0"><Key frame="14" value="-24.4" /><Key frame="29" value="12.7" /></ActuatorCurve></ActuatorList></Timeline></Box><Box name="Kordula " id="1" localization="8" tooltip="Plays the video; returns when it&apos;s done.&#x0A;&#x0A;You can also interrupt, pause or resume the video.&#x0A;&#x0A;You can get events when the video starts or finishes.&#x0A;&#x0A;V1.0.0&#x0A;" x="230" y="408"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        self.isRunning = False
+        self.startConnectId = None
+        self.finishConnectId = None
+        self.tabletService = None
+
+    def onUnload(self):
+        if self.tabletService:
+            try:
+                self.tabletService.stopVideo()
+            except Exception as e:
+                self.logger.error(e)
+            finally:
+                self.disconnectStartedListener()
+                self.disconnectFinishedListener()
+                self.isRunning = False
+
+    def disconnectFinishedListener(self):
+        if self.finishConnectId and self.tabletService:
+            try:
+                self.tabletService.videoFinished.disconnect(self.finishConnectId)
+                self.finishConnectId = None
+            except Exception as e:
+                self.logger.error(e)
+
+    def disconnectStartedListener(self):
+        if self.startConnectId and self.tabletService:
+            try:
+                self.tabletService.videoStarted.disconnect(self.startConnectId)
+                self.startConnectId = None
+            except Exception as e:
+                self.logger.error(e)
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partialUrl):
+        import os
+        subpath = os.path.join(self.packageUid(), os.path.normpath(partialUrl).lstrip("\\/"))
+        if self.tabletService:
+            return "http://%s/apps/%s" % (self.tabletService.robotIp(), subpath.replace(os.path.sep, "/"))
+        else:
+            self.logger.warning("No ALTabletService, can't get robot Ip.")
+            return None
+
+    def connectStartCallback(self):
+        try:
+            self.startConnectId = self.tabletService.videoStarted.connect(self.onVideoStarted)
+        except Exception as err:
+            self.logger.warning("Failed to subscribe to started callback: %s " % err)
+
+    def connectStopCallback(self):
+        try:
+            self.finishConnectId = self.tabletService.videoFinished.connect(self.onVideoFinished)
+        except Exception as err:
+            self.logger.warning("Failed to subscribe to stopped callback: %s " % err)
+
+    def onInput_onStart(self):
+        if self.isRunning:
+            return # already running, nothing to do
+        self.isRunning = True
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        self.tabletService = self._getTabletService()
+        if self.tabletService:
+            try:
+                url = self.getParameter("VideoPath")
+                if url == '':
+                    self.logger.error("URL of the video is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                self.connectStartCallback()
+                self.connectStopCallback()
+                self.tabletService.playVideo(url)
+            except Exception as err:
+                self.logger.warning("Error during playVideo or subscribe: %s " % err)
+                self.onStopped()
+                self.isRunning = False
+        else:
+            self.logger.warning("No ALTabletService, can't play video.")
+            self.onStopped()
+            self.isRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()
+
+    def onInput_onPauseVideo(self):
+        if self.tabletService:
+            self.tabletService.pauseVideo()
+
+    def onInput_onResumeVideo(self):
+        if self.tabletService:
+            self.tabletService.resumeVideo()
+
+    def onVideoStarted(self):
+        self.disconnectStartedListener()
+        self.onStarted()
+
+    def onVideoFinished(self):
+        self.disconnectFinishedListener()
+        self.onStopped()
+        self.isRunning = False]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onPauseVideo" type="1" type_size="1" nature="1" inner="0" tooltip="Pause the video when a signal is received on this input." id="4" /><Input name="onResumeVideo" type="1" type_size="1" nature="1" inner="0" tooltip="Resume the video when a signal is received on this input." id="5" /><Output name="onStarted" type="1" type_size="1" nature="2" inner="0" tooltip="Triggered when the video started" id="6" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="7" /><Parameter name="VideoPath" inherits_from_parent="0" content_type="3" value="videos/beispiel.mp4" default_value="" custom_choice="0" tooltip='path of the video inside the &quot;html&quot; folder (e.g. &quot;/video/myvideo.mp4&quot;' id="8" /></Box><Box name="Gandalf" id="5" localization="8" tooltip="Plays the video; returns when it&apos;s done.&#x0A;&#x0A;You can also interrupt, pause or resume the video.&#x0A;&#x0A;You can get events when the video starts or finishes.&#x0A;&#x0A;V1.0.0&#x0A;" x="226" y="540"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        self.isRunning = False
+        self.startConnectId = None
+        self.finishConnectId = None
+        self.tabletService = None
+
+    def onUnload(self):
+        if self.tabletService:
+            try:
+                self.tabletService.stopVideo()
+            except Exception as e:
+                self.logger.error(e)
+            finally:
+                self.disconnectStartedListener()
+                self.disconnectFinishedListener()
+                self.isRunning = False
+
+    def disconnectFinishedListener(self):
+        if self.finishConnectId and self.tabletService:
+            try:
+                self.tabletService.videoFinished.disconnect(self.finishConnectId)
+                self.finishConnectId = None
+            except Exception as e:
+                self.logger.error(e)
+
+    def disconnectStartedListener(self):
+        if self.startConnectId and self.tabletService:
+            try:
+                self.tabletService.videoStarted.disconnect(self.startConnectId)
+                self.startConnectId = None
+            except Exception as e:
+                self.logger.error(e)
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partialUrl):
+        import os
+        subpath = os.path.join(self.packageUid(), os.path.normpath(partialUrl).lstrip("\\/"))
+        if self.tabletService:
+            return "http://%s/apps/%s" % (self.tabletService.robotIp(), subpath.replace(os.path.sep, "/"))
+        else:
+            self.logger.warning("No ALTabletService, can't get robot Ip.")
+            return None
+
+    def connectStartCallback(self):
+        try:
+            self.startConnectId = self.tabletService.videoStarted.connect(self.onVideoStarted)
+        except Exception as err:
+            self.logger.warning("Failed to subscribe to started callback: %s " % err)
+
+    def connectStopCallback(self):
+        try:
+            self.finishConnectId = self.tabletService.videoFinished.connect(self.onVideoFinished)
+        except Exception as err:
+            self.logger.warning("Failed to subscribe to stopped callback: %s " % err)
+
+    def onInput_onStart(self):
+        if self.isRunning:
+            return # already running, nothing to do
+        self.isRunning = True
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        self.tabletService = self._getTabletService()
+        if self.tabletService:
+            try:
+                url = self.getParameter("VideoPath")
+                if url == '':
+                    self.logger.error("URL of the video is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                self.connectStartCallback()
+                self.connectStopCallback()
+                self.tabletService.playVideo(url)
+            except Exception as err:
+                self.logger.warning("Error during playVideo or subscribe: %s " % err)
+                self.onStopped()
+                self.isRunning = False
+        else:
+            self.logger.warning("No ALTabletService, can't play video.")
+            self.onStopped()
+            self.isRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()
+
+    def onInput_onPauseVideo(self):
+        if self.tabletService:
+            self.tabletService.pauseVideo()
+
+    def onInput_onResumeVideo(self):
+        if self.tabletService:
+            self.tabletService.resumeVideo()
+
+    def onVideoStarted(self):
+        self.disconnectStartedListener()
+        self.onStarted()
+
+    def onVideoFinished(self):
+        self.disconnectFinishedListener()
+        self.onStopped()
+        self.isRunning = False]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onPauseVideo" type="1" type_size="1" nature="1" inner="0" tooltip="Pause the video when a signal is received on this input." id="4" /><Input name="onResumeVideo" type="1" type_size="1" nature="1" inner="0" tooltip="Resume the video when a signal is received on this input." id="5" /><Output name="onStarted" type="1" type_size="1" nature="2" inner="0" tooltip="Triggered when the video started" id="6" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="7" /><Parameter name="VideoPath" inherits_from_parent="0" content_type="3" value="videos/gandalf.mp4" default_value="" custom_choice="0" tooltip='path of the video inside the &quot;html&quot; folder (e.g. &quot;/video/myvideo.mp4&quot;' id="8" /></Box><Box name="Headbang" id="7" localization="8" tooltip="ID : #04B 0003&#x0A;&#x0A;===================&#x0A;&#x0A;Tags :&#x0A;- Headbang" x="401" y="554"><bitmap>media/images/box/movement/move.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="stop" type="1" type_size="1" nature="1" inner="0" tooltip="" id="4" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="5" /><Timeline enable="1" fps="25" start_frame="1" end_frame="-1" size="949"><ActuatorList model=""><ActuatorCurve name="value" actuator="HeadPitch" mute="0" unit="0"><Key frame="43" value="-12.3072" /><Key frame="52" value="12.4782" /><Key frame="65" value="-17.9323" /><Key frame="79" value="11.7751" /><Key frame="96" value="-17.7565" /><Key frame="109" value="10.6325" /><Key frame="123" value="-10.6373" /><Key frame="141" value="18.1033" /><Key frame="157" value="-13.8893" /><Key frame="174" value="12.5661" /><Key frame="190" value="-19.9538" /><Key frame="208" value="13.5329" /><Key frame="224" value="-18.3718" /><Key frame="241" value="14.8898" /><Key frame="250" value="-22.4847" /><Key frame="258" value="4.80263" /><Key frame="267" value="-15.0151" /><Key frame="275" value="3.78123" /><Key frame="282" value="-11.9858" /><Key frame="290" value="4.55645" /><Key frame="297" value="-5.32874" /><Key frame="307" value="11.5304" /><Key frame="319" value="8.81216" /><Key frame="330" value="-10.1978" /><Key frame="352" value="-12.3072" /><Key frame="361" value="12.4782" /><Key frame="374" value="-17.9323" /><Key frame="388" value="11.7751" /><Key frame="405" value="-17.7565" /><Key frame="418" value="10.6325" /><Key frame="432" value="-10.6373" /><Key frame="450" value="18.1033" /><Key frame="466" value="-13.8893" /><Key frame="483" value="12.5661" /><Key frame="499" value="-19.9538" /><Key frame="517" value="13.5329" /><Key frame="533" value="-18.3718" /><Key frame="550" value="14.8898" /><Key frame="559" value="-22.4847" /><Key frame="567" value="4.80263" /><Key frame="576" value="-15.0151" /><Key frame="584" value="3.78123" /><Key frame="591" value="-11.9858" /><Key frame="599" value="4.55645" /><Key frame="606" value="-5.32874" /><Key frame="616" value="11.5304" /><Key frame="628" value="8.81216" /><Key frame="639" value="-10.1978" /><Key frame="662" value="-12.3072" /><Key frame="671" value="12.4782" /><Key frame="684" value="-17.9323" /><Key frame="698" value="11.7751" /><Key frame="715" value="-17.7565" /><Key frame="728" value="10.6325" /><Key frame="742" value="-10.6373" /><Key frame="760" value="18.1033" /><Key frame="776" value="-13.8893" /><Key frame="793" value="12.5661" /><Key frame="809" value="-19.9538" /><Key frame="827" value="13.5329" /><Key frame="843" value="-18.3718" /><Key frame="860" value="14.8898" /><Key frame="869" value="-22.4847" /><Key frame="877" value="4.80263" /><Key frame="886" value="-15.0151" /><Key frame="894" value="3.78123" /><Key frame="901" value="-11.9858" /><Key frame="909" value="4.55645" /><Key frame="916" value="-5.32874" /><Key frame="926" value="11.5304" /><Key frame="938" value="8.81216" /><Key frame="949" value="-10.1978" /></ActuatorCurve><ActuatorCurve name="value" actuator="HeadYaw" mute="0" unit="0"><Key frame="43" value="-4.92434" /><Key frame="52" value="-4.57277" /><Key frame="65" value="-3.86964" /><Key frame="79" value="-5.53958" /><Key frame="96" value="-3.16651" /><Key frame="109" value="-1.76024" /><Key frame="123" value="-1.23289" /><Key frame="141" value="-3.34229" /><Key frame="157" value="-1.145" /><Key frame="174" value="-2.55126" /><Key frame="190" value="-3.2544" /><Key frame="208" value="-3.95753" /><Key frame="224" value="-5.89115" /><Key frame="241" value="-11.1647" /><Key frame="250" value="-9.49471" /><Key frame="258" value="-4.3091" /><Key frame="267" value="-0.705538" /><Key frame="275" value="-0.00240423" /><Key frame="282" value="-1.84813" /><Key frame="290" value="-2.46337" /><Key frame="297" value="-3.16651" /><Key frame="307" value="1.84332" /><Key frame="330" value="-0.090296" /><Key frame="352" value="-4.92434" /><Key frame="361" value="-4.57277" /><Key frame="374" value="-3.86964" /><Key frame="388" value="-5.53958" /><Key frame="405" value="-3.16651" /><Key frame="418" value="-1.76024" /><Key frame="432" value="-1.23289" /><Key frame="450" value="-3.34229" /><Key frame="466" value="-1.145" /><Key frame="483" value="-2.55126" /><Key frame="499" value="-3.2544" /><Key frame="517" value="-3.95753" /><Key frame="533" value="-5.89115" /><Key frame="550" value="-11.1647" /><Key frame="559" value="-9.49471" /><Key frame="567" value="-4.3091" /><Key frame="576" value="-0.705538" /><Key frame="584" value="-0.00240423" /><Key frame="591" value="-1.84813" /><Key frame="599" value="-2.46337" /><Key frame="606" value="-3.16651" /><Key frame="616" value="1.84332" /><Key frame="639" value="-0.090296" /><Key frame="662" value="-4.92434" /><Key frame="671" value="-4.57277" /><Key frame="684" value="-3.86964" /><Key frame="698" value="-5.53958" /><Key frame="715" value="-3.16651" /><Key frame="728" value="-1.76024" /><Key frame="742" value="-1.23289" /><Key frame="760" value="-3.34229" /><Key frame="776" value="-1.145" /><Key frame="793" value="-2.55126" /><Key frame="809" value="-3.2544" /><Key frame="827" value="-3.95753" /><Key frame="843" value="-5.89115" /><Key frame="860" value="-11.1647" /><Key frame="869" value="-9.49471" /><Key frame="877" value="-4.3091" /><Key frame="886" value="-0.705538" /><Key frame="894" value="-0.00240423" /><Key frame="901" value="-1.84813" /><Key frame="909" value="-2.46337" /><Key frame="916" value="-3.16651" /><Key frame="926" value="1.84332" /><Key frame="949" value="-0.090296" /></ActuatorCurve><ActuatorCurve name="value" actuator="HipPitch" mute="0" unit="0"><Key frame="51" value="-25.7409" /><Key frame="64" value="-10.3033" /><Key frame="78" value="-25.7409" /><Key frame="95" value="-10.3033" /><Key frame="108" value="-25.7409" /><Key frame="122" value="-10.3033" /><Key frame="140" value="-19.581" /><Key frame="156" value="-10.3033" /><Key frame="173" value="-14.961" /><Key frame="189" value="-10.3033" /><Key frame="207" value="-14.961" /><Key frame="223" value="-10.3033" /><Key frame="240" value="-14.961" /><Key frame="274" value="-10.3033" /><Key frame="306" value="-25.7409" /><Key frame="319" value="-10.3033" /><Key frame="329" value="-2.57699" /><Key frame="360" value="-25.7409" /><Key frame="373" value="-10.3033" /><Key frame="387" value="-25.7409" /><Key frame="404" value="-10.3033" /><Key frame="417" value="-25.7409" /><Key frame="431" value="-10.3033" /><Key frame="449" value="-19.581" /><Key frame="465" value="-10.3033" /><Key frame="482" value="-14.961" /><Key frame="498" value="-10.3033" /><Key frame="516" value="-14.961" /><Key frame="532" value="-10.3033" /><Key frame="549" value="-14.961" /><Key frame="583" value="-10.3033" /><Key frame="615" value="-25.7409" /><Key frame="628" value="-10.3033" /><Key frame="638" value="-2.57699" /><Key frame="670" value="-25.7409" /><Key frame="683" value="-10.3033" /><Key frame="697" value="-25.7409" /><Key frame="714" value="-10.3033" /><Key frame="727" value="-25.7409" /><Key frame="741" value="-10.3033" /><Key frame="759" value="-19.581" /><Key frame="775" value="-10.3033" /><Key frame="792" value="-14.961" /><Key frame="808" value="-10.3033" /><Key frame="826" value="-14.961" /><Key frame="842" value="-10.3033" /><Key frame="859" value="-14.961" /><Key frame="893" value="-10.3033" /><Key frame="925" value="-25.7409" /><Key frame="938" value="-10.3033" /><Key frame="948" value="-2.57699" /></ActuatorCurve><ActuatorCurve name="value" actuator="HipRoll" mute="0" unit="0"><Key frame="51" value="0" /><Key frame="64" value="0" /><Key frame="78" value="0" /><Key frame="95" value="0" /><Key frame="108" value="0" /><Key frame="122" value="0" /><Key frame="140" value="0" /><Key frame="156" value="0" /><Key frame="173" value="0" /><Key frame="189" value="0" /><Key frame="207" value="0" /><Key frame="223" value="0" /><Key frame="240" value="0" /><Key frame="274" value="0" /><Key frame="306" value="0" /><Key frame="319" value="0" /><Key frame="329" value="-0.00165662" /><Key frame="360" value="0" /><Key frame="373" value="0" /><Key frame="387" value="0" /><Key frame="404" value="0" /><Key frame="417" value="0" /><Key frame="431" value="0" /><Key frame="449" value="0" /><Key frame="465" value="0" /><Key frame="482" value="0" /><Key frame="498" value="0" /><Key frame="516" value="0" /><Key frame="532" value="0" /><Key frame="549" value="0" /><Key frame="583" value="0" /><Key frame="615" value="0" /><Key frame="628" value="0" /><Key frame="638" value="-0.00165662" /><Key frame="670" value="0" /><Key frame="683" value="0" /><Key frame="697" value="0" /><Key frame="714" value="0" /><Key frame="727" value="0" /><Key frame="741" value="0" /><Key frame="759" value="0" /><Key frame="775" value="0" /><Key frame="792" value="0" /><Key frame="808" value="0" /><Key frame="826" value="0" /><Key frame="842" value="0" /><Key frame="859" value="0" /><Key frame="893" value="0" /><Key frame="925" value="0" /><Key frame="938" value="0" /><Key frame="948" value="-0.00165662" /></ActuatorCurve><ActuatorCurve name="value" actuator="KneePitch" mute="0" unit="0"><Key frame="51" value="14.0637" /><Key frame="64" value="4.14042" /><Key frame="78" value="14.0637" /><Key frame="95" value="4.14042" /><Key frame="108" value="14.0637" /><Key frame="122" value="4.14042" /><Key frame="140" value="12.5237" /><Key frame="156" value="4.14042" /><Key frame="173" value="9.44376" /><Key frame="189" value="4.14042" /><Key frame="207" value="9.44376" /><Key frame="223" value="4.14042" /><Key frame="240" value="9.44376" /><Key frame="274" value="4.14042" /><Key frame="306" value="14.0637" /><Key frame="319" value="4.14042" /><Key frame="329" value="-0.638153" /><Key frame="360" value="14.0637" /><Key frame="373" value="4.14042" /><Key frame="387" value="14.0637" /><Key frame="404" value="4.14042" /><Key frame="417" value="14.0637" /><Key frame="431" value="4.14042" /><Key frame="449" value="12.5237" /><Key frame="465" value="4.14042" /><Key frame="482" value="9.44376" /><Key frame="498" value="4.14042" /><Key frame="516" value="9.44376" /><Key frame="532" value="4.14042" /><Key frame="549" value="9.44376" /><Key frame="583" value="4.14042" /><Key frame="615" value="14.0637" /><Key frame="628" value="4.14042" /><Key frame="638" value="-0.638153" /><Key frame="670" value="14.0637" /><Key frame="683" value="4.14042" /><Key frame="697" value="14.0637" /><Key frame="714" value="4.14042" /><Key frame="727" value="14.0637" /><Key frame="741" value="4.14042" /><Key frame="759" value="12.5237" /><Key frame="775" value="4.14042" /><Key frame="792" value="9.44376" /><Key frame="808" value="4.14042" /><Key frame="826" value="9.44376" /><Key frame="842" value="4.14042" /><Key frame="859" value="9.44376" /><Key frame="893" value="4.14042" /><Key frame="925" value="14.0637" /><Key frame="938" value="4.14042" /><Key frame="948" value="-0.638153" /></ActuatorCurve><ActuatorCurve name="value" actuator="LElbowRoll" mute="0" unit="0"><Key frame="49" value="-29.8808" /><Key frame="62" value="-29.7929" /><Key frame="76" value="-36.209" /><Key frame="93" value="-31.3749" /><Key frame="106" value="-31.8144" /><Key frame="120" value="-56.9514" /><Key frame="138" value="-56.4" /><Key frame="154" value="-78.8413" /><Key frame="171" value="-40.0762" /><Key frame="187" value="-88.5925" /><Key frame="205" value="-29.0019" /><Key frame="221" value="-88.5925" /><Key frame="238" value="-58.5335" /><Key frame="255" value="-66.0043" /><Key frame="272" value="-68.9047" /><Key frame="287" value="-53.6994" /><Key frame="304" value="-72.0688" /><Key frame="327" value="-33.8359" /><Key frame="358" value="-29.8808" /><Key frame="371" value="-29.7929" /><Key frame="385" value="-36.209" /><Key frame="402" value="-31.3749" /><Key frame="415" value="-31.8144" /><Key frame="429" value="-56.9514" /><Key frame="447" value="-56.4" /><Key frame="463" value="-78.8413" /><Key frame="480" value="-40.0762" /><Key frame="496" value="-88.5925" /><Key frame="514" value="-29.0019" /><Key frame="530" value="-88.5925" /><Key frame="547" value="-58.5335" /><Key frame="564" value="-66.0043" /><Key frame="581" value="-68.9047" /><Key frame="596" value="-53.6994" /><Key frame="613" value="-72.0688" /><Key frame="636" value="-33.8359" /><Key frame="668" value="-29.8808" /><Key frame="681" value="-29.7929" /><Key frame="695" value="-36.209" /><Key frame="712" value="-31.3749" /><Key frame="725" value="-31.8144" /><Key frame="739" value="-56.9514" /><Key frame="757" value="-56.4" /><Key frame="773" value="-78.8413" /><Key frame="790" value="-40.0762" /><Key frame="806" value="-88.5925" /><Key frame="824" value="-29.0019" /><Key frame="840" value="-88.5925" /><Key frame="857" value="-58.5335" /><Key frame="874" value="-66.0043" /><Key frame="891" value="-68.9047" /><Key frame="906" value="-53.6994" /><Key frame="923" value="-72.0688" /><Key frame="946" value="-33.8359" /></ActuatorCurve><ActuatorCurve name="value" actuator="LElbowYaw" mute="0" unit="0"><Key frame="49" value="-88.3336" /><Key frame="62" value="-98.2654" /><Key frame="76" value="-102.748" /><Key frame="93" value="-104.242" /><Key frame="106" value="-95.3649" /><Key frame="120" value="-45.8" /><Key frame="138" value="-49.837" /><Key frame="154" value="-25.662" /><Key frame="171" value="-33.7528" /><Key frame="187" value="-80.0718" /><Key frame="205" value="-28.1278" /><Key frame="221" value="-80.0718" /><Key frame="238" value="-66.5364" /><Key frame="255" value="-53.88" /><Key frame="272" value="-53.5285" /><Key frame="287" value="-51.7706" /><Key frame="304" value="-45.3545" /><Key frame="327" value="-69.7005" /><Key frame="358" value="-88.3336" /><Key frame="371" value="-98.2654" /><Key frame="385" value="-102.748" /><Key frame="402" value="-104.242" /><Key frame="415" value="-95.3649" /><Key frame="429" value="-45.8" /><Key frame="447" value="-49.837" /><Key frame="463" value="-25.662" /><Key frame="480" value="-33.7528" /><Key frame="496" value="-80.0718" /><Key frame="514" value="-28.1278" /><Key frame="530" value="-80.0718" /><Key frame="547" value="-66.5364" /><Key frame="564" value="-53.88" /><Key frame="581" value="-53.5285" /><Key frame="596" value="-51.7706" /><Key frame="613" value="-45.3545" /><Key frame="636" value="-69.7005" /><Key frame="668" value="-88.3336" /><Key frame="681" value="-98.2654" /><Key frame="695" value="-102.748" /><Key frame="712" value="-104.242" /><Key frame="725" value="-95.3649" /><Key frame="739" value="-45.8" /><Key frame="757" value="-49.837" /><Key frame="773" value="-25.662" /><Key frame="790" value="-33.7528" /><Key frame="806" value="-80.0718" /><Key frame="824" value="-28.1278" /><Key frame="840" value="-80.0718" /><Key frame="857" value="-66.5364" /><Key frame="874" value="-53.88" /><Key frame="891" value="-53.5285" /><Key frame="906" value="-51.7706" /><Key frame="923" value="-45.3545" /><Key frame="946" value="-69.7005" /></ActuatorCurve><ActuatorCurve name="value" actuator="LHand" mute="0" unit="1"><Key frame="49" value="0.230571" /><Key frame="62" value="0.230935" /><Key frame="93" value="0.230935" /><Key frame="120" value="0.224389" /><Key frame="138" value="0.618182" /><Key frame="154" value="0.45" /><Key frame="171" value="0.83" /><Key frame="187" value="0.43" /><Key frame="205" value="0.91" /><Key frame="221" value="0.51" /><Key frame="238" value="0.688387" /><Key frame="255" value="0.6992" /><Key frame="272" value="0.6992" /><Key frame="304" value="0.684" /><Key frame="327" value="0.232025" /><Key frame="358" value="0.230571" /><Key frame="371" value="0.230935" /><Key frame="402" value="0.230935" /><Key frame="429" value="0.224389" /><Key frame="447" value="0.618182" /><Key frame="463" value="0.45" /><Key frame="480" value="0.83" /><Key frame="496" value="0.43" /><Key frame="514" value="0.91" /><Key frame="530" value="0.51" /><Key frame="547" value="0.688387" /><Key frame="564" value="0.6992" /><Key frame="581" value="0.6992" /><Key frame="613" value="0.684" /><Key frame="636" value="0.232025" /><Key frame="668" value="0.230571" /><Key frame="681" value="0.230935" /><Key frame="712" value="0.230935" /><Key frame="739" value="0.224389" /><Key frame="757" value="0.618182" /><Key frame="773" value="0.45" /><Key frame="790" value="0.83" /><Key frame="806" value="0.43" /><Key frame="824" value="0.91" /><Key frame="840" value="0.51" /><Key frame="857" value="0.688387" /><Key frame="874" value="0.6992" /><Key frame="891" value="0.6992" /><Key frame="923" value="0.684" /><Key frame="946" value="0.232025" /></ActuatorCurve><ActuatorCurve name="value" actuator="LShoulderPitch" mute="0" unit="0"><Key frame="49" value="97.2937" /><Key frame="62" value="96.8543" /><Key frame="76" value="90.5261" /><Key frame="93" value="95.9754" /><Key frame="106" value="92.1081" /><Key frame="120" value="50.4" /><Key frame="138" value="-27.8" /><Key frame="154" value="-65.0375" /><Key frame="171" value="-41.2236" /><Key frame="187" value="-23.5574" /><Key frame="205" value="-54.7589" /><Key frame="221" value="-23.5574" /><Key frame="238" value="47.3" /><Key frame="255" value="76.7271" /><Key frame="272" value="82.44" /><Key frame="287" value="87.0983" /><Key frame="304" value="78.6607" /><Key frame="327" value="91.4929" /><Key frame="358" value="97.2937" /><Key frame="371" value="96.8543" /><Key frame="385" value="90.5261" /><Key frame="402" value="95.9754" /><Key frame="415" value="92.1081" /><Key frame="429" value="50.4" /><Key frame="447" value="-27.8" /><Key frame="463" value="-65.0375" /><Key frame="480" value="-41.2236" /><Key frame="496" value="-23.5574" /><Key frame="514" value="-54.7589" /><Key frame="530" value="-23.5574" /><Key frame="547" value="47.3" /><Key frame="564" value="76.7271" /><Key frame="581" value="82.44" /><Key frame="596" value="87.0983" /><Key frame="613" value="78.6607" /><Key frame="636" value="91.4929" /><Key frame="668" value="97.2937" /><Key frame="681" value="96.8543" /><Key frame="695" value="90.5261" /><Key frame="712" value="95.9754" /><Key frame="725" value="92.1081" /><Key frame="739" value="50.4" /><Key frame="757" value="-27.8" /><Key frame="773" value="-65.0375" /><Key frame="790" value="-41.2236" /><Key frame="806" value="-23.5574" /><Key frame="824" value="-54.7589" /><Key frame="840" value="-23.5574" /><Key frame="857" value="47.3" /><Key frame="874" value="76.7271" /><Key frame="891" value="82.44" /><Key frame="906" value="87.0983" /><Key frame="923" value="78.6607" /><Key frame="946" value="91.4929" /></ActuatorCurve><ActuatorCurve name="value" actuator="LShoulderRoll" mute="0" unit="0"><Key frame="49" value="9.84147" /><Key frame="62" value="10.0173" /><Key frame="76" value="6.85315" /><Key frame="93" value="7.02893" /><Key frame="106" value="6.41369" /><Key frame="120" value="26.2" /><Key frame="138" value="15.2" /><Key frame="154" value="58.1867" /><Key frame="171" value="24.2557" /><Key frame="187" value="64.4222" /><Key frame="205" value="11.072" /><Key frame="221" value="64.4222" /><Key frame="238" value="21.0916" /><Key frame="255" value="23.6405" /><Key frame="272" value="23.8163" /><Key frame="287" value="20.8279" /><Key frame="304" value="23.6405" /><Key frame="327" value="10.0173" /><Key frame="358" value="9.84147" /><Key frame="371" value="10.0173" /><Key frame="385" value="6.85315" /><Key frame="402" value="7.02893" /><Key frame="415" value="6.41369" /><Key frame="429" value="26.2" /><Key frame="447" value="15.2" /><Key frame="463" value="58.1867" /><Key frame="480" value="24.2557" /><Key frame="496" value="64.4222" /><Key frame="514" value="11.072" /><Key frame="530" value="64.4222" /><Key frame="547" value="21.0916" /><Key frame="564" value="23.6405" /><Key frame="581" value="23.8163" /><Key frame="596" value="20.8279" /><Key frame="613" value="23.6405" /><Key frame="636" value="10.0173" /><Key frame="668" value="9.84147" /><Key frame="681" value="10.0173" /><Key frame="695" value="6.85315" /><Key frame="712" value="7.02893" /><Key frame="725" value="6.41369" /><Key frame="739" value="26.2" /><Key frame="757" value="15.2" /><Key frame="773" value="58.1867" /><Key frame="790" value="24.2557" /><Key frame="806" value="64.4222" /><Key frame="824" value="11.072" /><Key frame="840" value="64.4222" /><Key frame="857" value="21.0916" /><Key frame="874" value="23.6405" /><Key frame="891" value="23.8163" /><Key frame="906" value="20.8279" /><Key frame="923" value="23.6405" /><Key frame="946" value="10.0173" /></ActuatorCurve><ActuatorCurve name="value" actuator="LWristYaw" mute="0" unit="0"><Key frame="49" value="5.44688" /><Key frame="62" value="5.53477" /><Key frame="93" value="5.44688" /><Key frame="120" value="12.7" /><Key frame="138" value="33" /><Key frame="154" value="7.91266" /><Key frame="171" value="18" /><Key frame="205" value="18.2791" /><Key frame="238" value="16.1697" /><Key frame="255" value="-15.8229" /><Key frame="272" value="-10.8131" /><Key frame="304" value="2.45857" /><Key frame="327" value="6.67737" /><Key frame="358" value="5.44688" /><Key frame="371" value="5.53477" /><Key frame="402" value="5.44688" /><Key frame="429" value="12.7" /><Key frame="447" value="33" /><Key frame="463" value="7.91266" /><Key frame="480" value="18" /><Key frame="514" value="18.2791" /><Key frame="547" value="16.1697" /><Key frame="564" value="-15.8229" /><Key frame="581" value="-10.8131" /><Key frame="613" value="2.45857" /><Key frame="636" value="6.67737" /><Key frame="668" value="5.44688" /><Key frame="681" value="5.53477" /><Key frame="712" value="5.44688" /><Key frame="739" value="12.7" /><Key frame="757" value="33" /><Key frame="773" value="7.91266" /><Key frame="790" value="18" /><Key frame="824" value="18.2791" /><Key frame="857" value="16.1697" /><Key frame="874" value="-15.8229" /><Key frame="891" value="-10.8131" /><Key frame="923" value="2.45857" /><Key frame="946" value="6.67737" /></ActuatorCurve><ActuatorCurve name="value" actuator="RElbowRoll" mute="0" unit="0"><Key frame="50" value="56.9562" /><Key frame="63" value="86.5758" /><Key frame="77" value="50.3644" /><Key frame="94" value="89.5" /><Key frame="107" value="59.593" /><Key frame="121" value="89.5" /><Key frame="139" value="33.2255" /><Key frame="155" value="78.8413" /><Key frame="172" value="34.8075" /><Key frame="188" value="83.4995" /><Key frame="206" value="34.7196" /><Key frame="222" value="88.773" /><Key frame="239" value="38.7627" /><Key frame="256" value="51.1554" /><Key frame="273" value="57.3957" /><Key frame="288" value="45.7061" /><Key frame="305" value="65.0423" /><Key frame="328" value="25.2273" /><Key frame="359" value="56.9562" /><Key frame="372" value="86.5758" /><Key frame="386" value="50.3644" /><Key frame="403" value="89.5" /><Key frame="416" value="59.593" /><Key frame="430" value="89.5" /><Key frame="448" value="33.2255" /><Key frame="464" value="78.8413" /><Key frame="481" value="34.8075" /><Key frame="497" value="83.4995" /><Key frame="515" value="34.7196" /><Key frame="531" value="88.773" /><Key frame="548" value="38.7627" /><Key frame="565" value="51.1554" /><Key frame="582" value="57.3957" /><Key frame="597" value="45.7061" /><Key frame="614" value="65.0423" /><Key frame="637" value="25.2273" /><Key frame="669" value="56.9562" /><Key frame="682" value="86.5758" /><Key frame="696" value="50.3644" /><Key frame="713" value="89.5" /><Key frame="726" value="59.593" /><Key frame="740" value="89.5" /><Key frame="758" value="33.2255" /><Key frame="774" value="78.8413" /><Key frame="791" value="34.8075" /><Key frame="807" value="83.4995" /><Key frame="825" value="34.7196" /><Key frame="841" value="88.773" /><Key frame="858" value="38.7627" /><Key frame="875" value="51.1554" /><Key frame="892" value="57.3957" /><Key frame="907" value="45.7061" /><Key frame="924" value="65.0423" /><Key frame="947" value="25.2273" /></ActuatorCurve><ActuatorCurve name="value" actuator="RElbowYaw" mute="0" unit="0"><Key frame="41" value="39.1" /><Key frame="50" value="10.2809" /><Key frame="63" value="31.3749" /><Key frame="77" value="10.7204" /><Key frame="94" value="31.9023" /><Key frame="107" value="18.5428" /><Key frame="121" value="31.2871" /><Key frame="139" value="11.6872" /><Key frame="155" value="25.662" /><Key frame="172" value="15.0271" /><Key frame="188" value="38.4942" /><Key frame="206" value="20.4764" /><Key frame="222" value="93.3386" /><Key frame="239" value="5.35899" /><Key frame="256" value="25.8378" /><Key frame="273" value="26.7167" /><Key frame="288" value="29.4413" /><Key frame="305" value="36.6484" /><Key frame="328" value="67.2348" /><Key frame="350" value="39.1" /><Key frame="359" value="10.2809" /><Key frame="372" value="31.3749" /><Key frame="386" value="10.7204" /><Key frame="403" value="31.9023" /><Key frame="416" value="18.5428" /><Key frame="430" value="31.2871" /><Key frame="448" value="11.6872" /><Key frame="464" value="25.662" /><Key frame="481" value="15.0271" /><Key frame="497" value="38.4942" /><Key frame="515" value="20.4764" /><Key frame="531" value="93.3386" /><Key frame="548" value="5.35899" /><Key frame="565" value="25.8378" /><Key frame="582" value="26.7167" /><Key frame="597" value="29.4413" /><Key frame="614" value="36.6484" /><Key frame="637" value="67.2348" /><Key frame="660" value="39.1" /><Key frame="669" value="10.2809" /><Key frame="682" value="31.3749" /><Key frame="696" value="10.7204" /><Key frame="713" value="31.9023" /><Key frame="726" value="18.5428" /><Key frame="740" value="31.2871" /><Key frame="758" value="11.6872" /><Key frame="774" value="25.662" /><Key frame="791" value="15.0271" /><Key frame="807" value="38.4942" /><Key frame="825" value="20.4764" /><Key frame="841" value="93.3386" /><Key frame="858" value="5.35899" /><Key frame="875" value="25.8378" /><Key frame="892" value="26.7167" /><Key frame="907" value="29.4413" /><Key frame="924" value="36.6484" /><Key frame="947" value="67.2348" /></ActuatorCurve><ActuatorCurve name="value" actuator="RHand" mute="0" unit="1"><Key frame="41" value="0.57" /><Key frame="50" value="0.745455" /><Key frame="63" value="0.26" /><Key frame="77" value="0.82" /><Key frame="94" value="0.514873" /><Key frame="107" value="0.78" /><Key frame="121" value="0.3" /><Key frame="139" value="0.81" /><Key frame="155" value="0.45" /><Key frame="172" value="0.83" /><Key frame="188" value="0.43" /><Key frame="206" value="0.91" /><Key frame="222" value="0.51" /><Key frame="239" value="0.514873" /><Key frame="256" value="0.6944" /><Key frame="273" value="0.7988" /><Key frame="305" value="0.5424" /><Key frame="328" value="0.410207" /><Key frame="350" value="0.57" /><Key frame="359" value="0.745455" /><Key frame="372" value="0.26" /><Key frame="386" value="0.82" /><Key frame="403" value="0.514873" /><Key frame="416" value="0.78" /><Key frame="430" value="0.3" /><Key frame="448" value="0.81" /><Key frame="464" value="0.45" /><Key frame="481" value="0.83" /><Key frame="497" value="0.43" /><Key frame="515" value="0.91" /><Key frame="531" value="0.51" /><Key frame="548" value="0.514873" /><Key frame="565" value="0.6944" /><Key frame="582" value="0.7988" /><Key frame="614" value="0.5424" /><Key frame="637" value="0.410207" /><Key frame="660" value="0.57" /><Key frame="669" value="0.745455" /><Key frame="682" value="0.26" /><Key frame="696" value="0.82" /><Key frame="713" value="0.514873" /><Key frame="726" value="0.78" /><Key frame="740" value="0.3" /><Key frame="758" value="0.81" /><Key frame="774" value="0.45" /><Key frame="791" value="0.83" /><Key frame="807" value="0.43" /><Key frame="825" value="0.91" /><Key frame="841" value="0.51" /><Key frame="858" value="0.514873" /><Key frame="875" value="0.6944" /><Key frame="892" value="0.7988" /><Key frame="924" value="0.5424" /><Key frame="947" value="0.410207" /></ActuatorCurve><ActuatorCurve name="value" actuator="RShoulderPitch" mute="0" unit="0"><Key frame="50" value="-46.3165" /><Key frame="63" value="-64.7738" /><Key frame="77" value="-44.5587" /><Key frame="94" value="-44.7345" /><Key frame="107" value="-48.6017" /><Key frame="121" value="-49.217" /><Key frame="139" value="-64.6859" /><Key frame="155" value="-65.0375" /><Key frame="172" value="-50.4474" /><Key frame="188" value="-57.9182" /><Key frame="206" value="-55.6331" /><Key frame="222" value="9.05525" /><Key frame="239" value="18.3718" /><Key frame="256" value="60.2082" /><Key frame="273" value="66.6243" /><Key frame="288" value="70.4037" /><Key frame="305" value="70.931" /><Key frame="328" value="84.9937" /><Key frame="359" value="-46.3165" /><Key frame="372" value="-64.7738" /><Key frame="386" value="-44.5587" /><Key frame="403" value="-44.7345" /><Key frame="416" value="-48.6017" /><Key frame="430" value="-49.217" /><Key frame="448" value="-64.6859" /><Key frame="464" value="-65.0375" /><Key frame="481" value="-50.4474" /><Key frame="497" value="-57.9182" /><Key frame="515" value="-55.6331" /><Key frame="531" value="9.05525" /><Key frame="548" value="18.3718" /><Key frame="565" value="60.2082" /><Key frame="582" value="66.6243" /><Key frame="597" value="70.4037" /><Key frame="614" value="70.931" /><Key frame="637" value="84.9937" /><Key frame="669" value="-46.3165" /><Key frame="682" value="-64.7738" /><Key frame="696" value="-44.5587" /><Key frame="713" value="-44.7345" /><Key frame="726" value="-48.6017" /><Key frame="740" value="-49.217" /><Key frame="758" value="-64.6859" /><Key frame="774" value="-65.0375" /><Key frame="791" value="-50.4474" /><Key frame="807" value="-57.9182" /><Key frame="825" value="-55.6331" /><Key frame="841" value="9.05525" /><Key frame="858" value="18.3718" /><Key frame="875" value="60.2082" /><Key frame="892" value="66.6243" /><Key frame="907" value="70.4037" /><Key frame="924" value="70.931" /><Key frame="947" value="84.9937" /></ActuatorCurve><ActuatorCurve name="value" actuator="RShoulderRoll" mute="0" unit="0"><Key frame="50" value="-34.5438" /><Key frame="63" value="-73.6557" /><Key frame="77" value="-31.2919" /><Key frame="94" value="-74.7983" /><Key frame="107" value="-30.2372" /><Key frame="121" value="-80.4233" /><Key frame="139" value="-13.1862" /><Key frame="155" value="-58.1867" /><Key frame="172" value="-22.1511" /><Key frame="188" value="-77.2592" /><Key frame="206" value="-18.7233" /><Key frame="222" value="-51.5948" /><Key frame="239" value="-11.7799" /><Key frame="256" value="-20.7449" /><Key frame="273" value="-23.8211" /><Key frame="288" value="-20.1296" /><Key frame="305" value="-21.2722" /><Key frame="328" value="-7.03374" /><Key frame="359" value="-34.5438" /><Key frame="372" value="-73.6557" /><Key frame="386" value="-31.2919" /><Key frame="403" value="-74.7983" /><Key frame="416" value="-30.2372" /><Key frame="430" value="-80.4233" /><Key frame="448" value="-13.1862" /><Key frame="464" value="-58.1867" /><Key frame="481" value="-22.1511" /><Key frame="497" value="-77.2592" /><Key frame="515" value="-18.7233" /><Key frame="531" value="-51.5948" /><Key frame="548" value="-11.7799" /><Key frame="565" value="-20.7449" /><Key frame="582" value="-23.8211" /><Key frame="597" value="-20.1296" /><Key frame="614" value="-21.2722" /><Key frame="637" value="-7.03374" /><Key frame="669" value="-34.5438" /><Key frame="682" value="-73.6557" /><Key frame="696" value="-31.2919" /><Key frame="713" value="-74.7983" /><Key frame="726" value="-30.2372" /><Key frame="740" value="-80.4233" /><Key frame="758" value="-13.1862" /><Key frame="774" value="-58.1867" /><Key frame="791" value="-22.1511" /><Key frame="807" value="-77.2592" /><Key frame="825" value="-18.7233" /><Key frame="841" value="-51.5948" /><Key frame="858" value="-11.7799" /><Key frame="875" value="-20.7449" /><Key frame="892" value="-23.8211" /><Key frame="907" value="-20.1296" /><Key frame="924" value="-21.2722" /><Key frame="947" value="-7.03374" /></ActuatorCurve><ActuatorCurve name="value" actuator="RWristYaw" mute="0" unit="0"><Key frame="41" value="-10.7" /><Key frame="50" value="-7" /><Key frame="63" value="-6.85796" /><Key frame="94" value="-6.85796" /><Key frame="121" value="-7.4732" /><Key frame="155" value="-7.91266" /><Key frame="172" value="-8.00055" /><Key frame="206" value="-8.35212" /><Key frame="239" value="-12.9225" /><Key frame="256" value="37.9668" /><Key frame="273" value="30.3202" /><Key frame="305" value="5.00743" /><Key frame="328" value="9.22623" /><Key frame="350" value="-10.7" /><Key frame="359" value="-7" /><Key frame="372" value="-6.85796" /><Key frame="403" value="-6.85796" /><Key frame="430" value="-7.4732" /><Key frame="464" value="-7.91266" /><Key frame="481" value="-8.00055" /><Key frame="515" value="-8.35212" /><Key frame="548" value="-12.9225" /><Key frame="565" value="37.9668" /><Key frame="582" value="30.3202" /><Key frame="614" value="5.00743" /><Key frame="637" value="9.22623" /><Key frame="660" value="-10.7" /><Key frame="669" value="-7" /><Key frame="682" value="-6.85796" /><Key frame="713" value="-6.85796" /><Key frame="740" value="-7.4732" /><Key frame="774" value="-7.91266" /><Key frame="791" value="-8.00055" /><Key frame="825" value="-8.35212" /><Key frame="858" value="-12.9225" /><Key frame="875" value="37.9668" /><Key frame="892" value="30.3202" /><Key frame="924" value="5.00743" /><Key frame="947" value="9.22623" /></ActuatorCurve></ActuatorList></Timeline><Resource name="Standing" type="Lock" timeout="1" /><Resource name="All motors" type="Lock" timeout="1" /></Box><Box name="Maren" id="9" localization="8" tooltip="Plays the video; returns when it&apos;s done.&#x0A;&#x0A;You can also interrupt, pause or resume the video.&#x0A;&#x0A;You can get events when the video starts or finishes.&#x0A;&#x0A;V1.0.0&#x0A;" x="223" y="660"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        self.isRunning = False
+        self.startConnectId = None
+        self.finishConnectId = None
+        self.tabletService = None
+
+    def onUnload(self):
+        if self.tabletService:
+            try:
+                self.tabletService.stopVideo()
+            except Exception as e:
+                self.logger.error(e)
+            finally:
+                self.disconnectStartedListener()
+                self.disconnectFinishedListener()
+                self.isRunning = False
+
+    def disconnectFinishedListener(self):
+        if self.finishConnectId and self.tabletService:
+            try:
+                self.tabletService.videoFinished.disconnect(self.finishConnectId)
+                self.finishConnectId = None
+            except Exception as e:
+                self.logger.error(e)
+
+    def disconnectStartedListener(self):
+        if self.startConnectId and self.tabletService:
+            try:
+                self.tabletService.videoStarted.disconnect(self.startConnectId)
+                self.startConnectId = None
+            except Exception as e:
+                self.logger.error(e)
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partialUrl):
+        import os
+        subpath = os.path.join(self.packageUid(), os.path.normpath(partialUrl).lstrip("\\/"))
+        if self.tabletService:
+            return "http://%s/apps/%s" % (self.tabletService.robotIp(), subpath.replace(os.path.sep, "/"))
+        else:
+            self.logger.warning("No ALTabletService, can't get robot Ip.")
+            return None
+
+    def connectStartCallback(self):
+        try:
+            self.startConnectId = self.tabletService.videoStarted.connect(self.onVideoStarted)
+        except Exception as err:
+            self.logger.warning("Failed to subscribe to started callback: %s " % err)
+
+    def connectStopCallback(self):
+        try:
+            self.finishConnectId = self.tabletService.videoFinished.connect(self.onVideoFinished)
+        except Exception as err:
+            self.logger.warning("Failed to subscribe to stopped callback: %s " % err)
+
+    def onInput_onStart(self):
+        if self.isRunning:
+            return # already running, nothing to do
+        self.isRunning = True
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        self.tabletService = self._getTabletService()
+        if self.tabletService:
+            try:
+                url = self.getParameter("VideoPath")
+                if url == '':
+                    self.logger.error("URL of the video is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                self.connectStartCallback()
+                self.connectStopCallback()
+                self.tabletService.playVideo(url)
+            except Exception as err:
+                self.logger.warning("Error during playVideo or subscribe: %s " % err)
+                self.onStopped()
+                self.isRunning = False
+        else:
+            self.logger.warning("No ALTabletService, can't play video.")
+            self.onStopped()
+            self.isRunning = False
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()
+
+    def onInput_onPauseVideo(self):
+        if self.tabletService:
+            self.tabletService.pauseVideo()
+
+    def onInput_onResumeVideo(self):
+        if self.tabletService:
+            self.tabletService.resumeVideo()
+
+    def onVideoStarted(self):
+        self.disconnectStartedListener()
+        self.onStarted()
+
+    def onVideoFinished(self):
+        self.disconnectFinishedListener()
+        self.onStopped()
+        self.isRunning = False]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onPauseVideo" type="1" type_size="1" nature="1" inner="0" tooltip="Pause the video when a signal is received on this input." id="4" /><Input name="onResumeVideo" type="1" type_size="1" nature="1" inner="0" tooltip="Resume the video when a signal is received on this input." id="5" /><Output name="onStarted" type="1" type_size="1" nature="2" inner="0" tooltip="Triggered when the video started" id="6" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="7" /><Parameter name="VideoPath" inherits_from_parent="0" content_type="3" value="videos/beispiel2.mp4" default_value="" custom_choice="0" tooltip='path of the video inside the &quot;html&quot; folder (e.g. &quot;/video/myvideo.mp4&quot;' id="8" /></Box><Box name="GoToStance_Affirmation_Center (1)" id="4" localization="8" tooltip="ID : #01C 9991&#x0A;&#x0A;===================&#x0A;&#x0A;Tags : &#x0A;- Transition&#x0A;&#x0A;===================&#x0A;&#x0A;Common dialog : Yes&#x0A;&#x0A;===================&#x0A;&#x0A;Start stance : Center&#x0A;End stance : Center" x="543" y="549"><bitmap>media/images/box/movement/move.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Timeline enable="1" fps="25" start_frame="1" end_frame="-1" size="31"><ActuatorList model=""><ActuatorCurve name="value" actuator="HeadPitch" mute="0" unit="0"><Key frame="15" value="-7.78743" /><Key frame="30" value="-16.4032" /></ActuatorCurve><ActuatorCurve name="value" actuator="HeadYaw" mute="0" unit="0"><Key frame="30" value="-2.90283" /></ActuatorCurve><ActuatorCurve name="value" actuator="HipPitch" mute="0" unit="0"><Key frame="15" value="-14.4652" /><Key frame="30" value="-2.71089" /></ActuatorCurve><ActuatorCurve name="value" actuator="HipRoll" mute="0" unit="0"><Key frame="30" value="-0.0120679" /></ActuatorCurve><ActuatorCurve name="value" actuator="KneePitch" mute="0" unit="0"><Key frame="15" value="7.00987" /><Key frame="30" value="-0.617537" /></ActuatorCurve><ActuatorCurve name="value" actuator="LElbowRoll" mute="0" unit="0"><Key frame="16" value="-66.3" /><Key frame="29" value="-65.9" /><Key frame="31" value="-70.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="LElbowYaw" mute="0" unit="0"><Key frame="16" value="-77.1" /><Key frame="31" value="-83.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="LHand" mute="0" unit="1"><Key frame="16" value="0.49" /><Key frame="29" value="0.35" /></ActuatorCurve><ActuatorCurve name="value" actuator="LShoulderPitch" mute="0" unit="0"><Key frame="14" value="62.8" /><Key frame="31" value="93.7" /></ActuatorCurve><ActuatorCurve name="value" actuator="LShoulderRoll" mute="0" unit="0"><Key frame="14" value="19.1377" /><Key frame="31" value="8.33774" /></ActuatorCurve><ActuatorCurve name="value" actuator="LWristYaw" mute="0" unit="0"><Key frame="16" value="-42" /><Key frame="31" value="-12.7" /></ActuatorCurve><ActuatorCurve name="value" actuator="RElbowRoll" mute="0" unit="0"><Key frame="14" value="56.7" /><Key frame="29" value="70.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="RElbowYaw" mute="0" unit="0"><Key frame="14" value="63.7" /><Key frame="29" value="83.8" /></ActuatorCurve><ActuatorCurve name="value" actuator="RHand" mute="0" unit="1"><Key frame="14" value="0.09" /><Key frame="29" value="0.53" /></ActuatorCurve><ActuatorCurve name="value" actuator="RShoulderPitch" mute="0" unit="0"><Key frame="16" value="64.5" /><Key frame="29" value="93.7" /></ActuatorCurve><ActuatorCurve name="value" actuator="RShoulderRoll" mute="0" unit="0"><Key frame="16" value="-11.9981" /><Key frame="29" value="-6.99811" /></ActuatorCurve><ActuatorCurve name="value" actuator="RWristYaw" mute="0" unit="0"><Key frame="14" value="-24.4" /><Key frame="29" value="12.7" /></ActuatorCurve></ActuatorList></Timeline></Box><Box name="fIN" id="13" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="225" y="788"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/fakultaetIN.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="Wait" id="10" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="102" y="795"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="35" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Box name="swP" id="11" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="232" y="909"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/swp.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="Wait (1)" id="12" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="88" y="932"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="25" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Box name="szI" id="14" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="232" y="1026"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/szi.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="Wait (2)" id="15" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="88" y="1047"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="27" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Box name="se" id="16" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="233" y="1156"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/se.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="nis" id="17" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="229" y="1278"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/nis.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="ras" id="18" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="228" y="1405"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/ras.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="Wait (3)" id="19" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="94" y="1155"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="21" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Box name="Wait (4)" id="20" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="95" y="1284"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="20" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Box name="Wait (5)" id="21" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="98" y="1409"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="18" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Box name="mentoren" id="22" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="222" y="1534"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/mentoren.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="sProbieren" id="23" localization="8" tooltip="display an image on the screen&#x0A;&#x0A;V1.0.0&#x0A;" x="225" y="1655"><bitmap>media/images/box/interaction/rec_movie.png</bitmap><script language="4"><content><![CDATA[
+
+class MyClass(GeneratedClass):
+
+    def onLoad(self):
+        pass
+
+    def onUnload(self):
+        pass
+
+    def _getTabletService(self):
+        tabletService = None
+        try:
+            tabletService = self.session().service("ALTabletService")
+        except Exception as e:
+            self.logger.error(e)
+        return tabletService
+
+    def _getAbsoluteUrl(self, partial_url):
+        import os
+        subPath = os.path.join(self.packageUid(), os.path.normpath(partial_url).lstrip("\\/"))
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        return "http://%s/apps/%s" %(self._getTabletService().robotIp(), subPath.replace(os.path.sep, "/"))
+
+    def onInput_onStart(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                url = self.getParameter("ImageUrl")
+                if url == '':
+                    self.logger.error("URL of the image is empty")
+                if not url.startswith('http'):
+                    url = self._getAbsoluteUrl(url)
+                tabletService.showImage(url)
+            except Exception as err:
+                self.logger.error("Error during ShowImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't display the image.")
+            self.onStopped()
+
+    def onInput_onHideImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                tabletService.hideImage()
+            except Exception as err:
+                self.logger.error("Error during HideImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't hide the image.")
+            self.onStopped()
+
+    def onInput_onPreLoadImage(self):
+        # We create TabletService here in order to avoid
+        # problems with connections and disconnections of the tablet during the life of the application
+        tabletService = self._getTabletService()
+        if tabletService:
+            try:
+                partialUrl = self.getParameter("ImageUrl")
+                fullUrl = self._getAbsoluteUrl(partialUrl)
+                tabletService.preLoadImage(fullUrl)
+            except Exception as err:
+                self.logger.warning("Error during preLoadImage : %s " % err)
+                self.onStopped()
+        else:
+            self.logger.warning("No ALTabletService, can't preload the image.")
+            self.onStopped()
+
+    def onInput_onStop(self):
+        self.onUnload()
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Input name="onHideImage" type="1" type_size="1" nature="1" inner="0" tooltip="Hide the image when a signal is received on this input." id="4" /><Input name="onPreLoadImage" type="1" type_size="1" nature="1" inner="0" tooltip="Preload the image when a signal is received on this input." id="5" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="6" /><Parameter name="ImageUrl" inherits_from_parent="0" content_type="3" value="/Bilder/sp.jpg" default_value="" custom_choice="0" tooltip='path of the image inside the &quot;html&quot; folder (e.g. &quot;/images/myimage.png&quot;' id="7" /></Box><Box name="Wait (6)" id="24" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="101" y="1540"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="33" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Box name="Wait (7)" id="25" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="99" y="1663"><bitmap>media/images/box/wait.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.waiting = None
+
+    def onUnload(self):
+        self.cancelWaiting()
+
+    def triggerOutput(self):
+        self.timerOutput()
+
+    def cancelWaiting(self):
+        if self.waiting:
+            self.waiting.cancel()
+        self.waiting = None
+
+    def onInput_onStart(self):
+        self.cancelWaiting()
+        import qi
+        self.waiting = qi.async(self.triggerOutput, delay=int(self.getParameter("Timeout (s)") * 1000 * 1000))
+
+    def onInput_onStop(self):
+        if self.getParameter("Trigger timerOutput if cancelled") and self.waiting and self.waiting.isRunning():
+            self.timerOutput()
+        self.onUnload()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" /><Output name="timerOutput" type="1" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" /><Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="29" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" /><Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" /></Box><Link inputowner="3" indexofinput="2" outputowner="0" indexofoutput="5" /><Link inputowner="0" indexofinput="19" outputowner="3" indexofoutput="3" /><Link inputowner="6" indexofinput="2" outputowner="8" indexofoutput="4" /><Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="5" indexofinput="3" outputowner="0" indexofoutput="9" /><Link inputowner="1" indexofinput="3" outputowner="0" indexofoutput="9" /><Link inputowner="7" indexofinput="3" outputowner="0" indexofoutput="9" /><Link inputowner="4" indexofinput="2" outputowner="7" indexofoutput="5" /><Link inputowner="8" indexofinput="3" outputowner="0" indexofoutput="9" /><Link inputowner="13" indexofinput="4" outputowner="10" indexofoutput="4" /><Link inputowner="5" indexofinput="2" outputowner="0" indexofoutput="8" /><Link inputowner="7" indexofinput="2" outputowner="0" indexofoutput="8" /><Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="7" /><Link inputowner="8" indexofinput="2" outputowner="0" indexofoutput="6" /><Link inputowner="13" indexofinput="2" outputowner="0" indexofoutput="11" /><Link inputowner="10" indexofinput="2" outputowner="0" indexofoutput="11" /><Link inputowner="11" indexofinput="2" outputowner="0" indexofoutput="12" /><Link inputowner="12" indexofinput="2" outputowner="0" indexofoutput="12" /><Link inputowner="14" indexofinput="2" outputowner="0" indexofoutput="13" /><Link inputowner="15" indexofinput="2" outputowner="0" indexofoutput="13" /><Link inputowner="11" indexofinput="4" outputowner="12" indexofoutput="4" /><Link inputowner="14" indexofinput="4" outputowner="15" indexofoutput="4" /><Link inputowner="16" indexofinput="2" outputowner="0" indexofoutput="14" /><Link inputowner="19" indexofinput="2" outputowner="0" indexofoutput="14" /><Link inputowner="16" indexofinput="4" outputowner="19" indexofoutput="4" /><Link inputowner="17" indexofinput="2" outputowner="0" indexofoutput="15" /><Link inputowner="20" indexofinput="2" outputowner="0" indexofoutput="15" /><Link inputowner="17" indexofinput="4" outputowner="20" indexofoutput="4" /><Link inputowner="18" indexofinput="2" outputowner="0" indexofoutput="16" /><Link inputowner="21" indexofinput="2" outputowner="0" indexofoutput="16" /><Link inputowner="18" indexofinput="4" outputowner="21" indexofoutput="4" /><Link inputowner="22" indexofinput="2" outputowner="0" indexofoutput="17" /><Link inputowner="24" indexofinput="2" outputowner="0" indexofoutput="17" /><Link inputowner="22" indexofinput="4" outputowner="24" indexofoutput="4" /><Link inputowner="23" indexofinput="2" outputowner="0" indexofoutput="18" /><Link inputowner="25" indexofinput="2" outputowner="0" indexofoutput="18" /><Link inputowner="23" indexofinput="4" outputowner="25" indexofoutput="4" /><Link inputowner="9" indexofinput="3" outputowner="0" indexofoutput="9" /><Link inputowner="9" indexofinput="2" outputowner="0" indexofoutput="10" /></Diagram></BehaviorKeyframe></BehaviorLayer></Timeline></Box></ChoregrapheProject>
