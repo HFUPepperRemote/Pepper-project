@@ -185,7 +185,7 @@ class Pepper():
 
         
     def halloMartin(self):
-        self.sayText("Hallo Martin, dass hier soll der Proof of concept sein!", 90, 100)
+        self.sayText("Hallo Martin, dass hier soll der Proof of concept sein! Das hier ist eine veränderung an der Python datei", 90, 100)
         # Choregraphe simplified export in Python.
         from naoqi import ALProxy
         names = list()
