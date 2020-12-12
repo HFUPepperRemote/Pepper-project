@@ -184,81 +184,15 @@ class Pepper():
     
 
         
-    def halloHerrCochlovius(self):
-        self.sayText("Hallo Herr Cochlovius. hier rufe ich eine Funktion auf mit selbst definierten Bewegungen", 90, 100)
+    def halloMartin(self):
+        self.sayText("Hallo Martin, dass hier soll der Proof of concept sein!", 90, 100)
         # Choregraphe simplified export in Python.
         from naoqi import ALProxy
         names = list()
         times = list()
         keys = list()
         
-        names.append("HeadPitch")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-0.121185, -0.133456, -0.111981, -0.110447, -0.110447])
         
-        names.append("HeadYaw")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-1.27014, 1.44961, 0.0260777, 0.0245438, 0.0245438])
-        
-        names.append("HipPitch")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-0.0199418, -0.0199418, -0.0199418, -0.00920391, -0.00920391])
-        
-        names.append("HipRoll")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-0.0107379, 0, 0, -0.00153399, -0.00153399])
-        
-        names.append("KneePitch")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-0.00153399, -0.00153399, -0.00153399, 0.00920391, 0.00920391])
-        
-        names.append("LElbowRoll")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-0.116583, -0.116583, -0.116583, -0.116583, -0.116583])
-        
-        names.append("LElbowYaw")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-1.71499, -1.71499, -1.71499, -1.71499, -1.71499])
-        
-        names.append("LHand")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([0.690685, 0.690685, 0.690685, 0.680141, 0.680141])
-        
-        names.append("LShoulderPitch")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([1.75948, 1.75948, 1.75948, 1.75948, 1.75948])
-        
-        names.append("LShoulderRoll")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([0.0997088, 0.0997088, 0.0997088, 0.0997088, 0.0997088])
-        
-        names.append("LWristYaw")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([0.0444441, 0.0444441, 0.0444441, 0.0444441, 0.0444441])
-        
-        names.append("RElbowRoll")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([0.0935729, 0.0935729, 0.0935729, 0.543029, 0.167204])
-        
-        names.append("RElbowYaw")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([1.69198, 1.69198, 1.69198, 1.67511, 1.67511])
-        
-        names.append("RHand")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([0.676626, 0.676626, 0.676626, 0.596661, 0.596661])
-        
-        names.append("RShoulderPitch")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([1.75027, 1.75027, 1.75027, 0.0276117, 1.57693])
-        
-        names.append("RShoulderRoll")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-0.0935729, -0.0935729, -0.0935729, -0.0184078, -0.0122719])
-        
-        names.append("RWristYaw")
-        times.append([1.12, 3.32, 5.68, 7.96, 9.96])
-        keys.append([-0.047596, -0.047596, -0.047596, 1.47873, -0.00310993])
         
         try:
           # uncomment the following line and modify the IP if you use this script outside Choregraphe.
@@ -285,7 +219,9 @@ if __name__ == "__main__":
     myPepper= Pepper(args)
     myPepper.onLoad()
     #myPepper.onInput_onStart()
-    myPepper.halloHerrCochlovius()
+    myPepper.halloMartin()
+    
+    
 
 
 
